@@ -25,7 +25,7 @@ final class SetViewModel {
     var set = SetModel()
     @Published var score = 0
 
-    var cardInfoList = [CardInfo](repeating: .init() , count: 24)
+    var cardInfoList = [CardInfo]()
     var setChecker = false
     var selectedTwice = false
         
@@ -43,25 +43,32 @@ final class SetViewModel {
         set.availableCards.removeAll()
         set.currentCards.removeAll()
         set.selectedCards.removeAll()
+        cardInfoList.removeAll()
+        cardInfoList = [CardInfo](repeating: .init(), count: 12)
         generateAllCardCombinations()
-        addCards(numberOfCardsToSelect: 24)
-        firstUpdateCardModel()
+        addCards(numberOfCardsToSelect: 12)
+        updateCardModel()
     }
     
     func addThreeCard() {
-        var addition = 0
-        for index in 0..<cardInfoList.count {
-            if cardInfoList[index].isHidden == true {
-                cardInfoList[index].isHidden = false
-                cardInfoList[index].isEnabled = true
-                addition += 1
-            }
-            if addition == 3 { return }
-        }
+        addCards(numberOfCardsToSelect: 3)
+        lastUpdateCardModel()
     }
     
     func isSelected(at index: Int) -> Bool {
-        return cardIsSelected(card: set.currentCards[index])
+        if set.currentCards.count > index {
+            return cardIsSelected(card: set.currentCards[index])
+        } else {
+            return false
+        }
+    }
+    
+    func isDisabledAddThreeCardButton() -> Bool {
+        if set.availableCards.count < 3 {
+            return true
+        } else {
+            return false
+        }
     }
     
     private func generateAllCardCombinations() {
@@ -77,26 +84,29 @@ final class SetViewModel {
         }
     }
     
-    private func firstUpdateCardModel() {
-        for index in 0..<24 {
-                cardInfoList[index].index = index
-                cardInfoList[index].title = CardTheme.setCard(card: set.currentCards[index])
-                cardInfoList[index].isHidden = (index > 3 && index < 16) ? false : true
-                cardInfoList[index].isEnabled = (index > 3 && index < 16) ? true : false
+    private func updateCardModel() {
+        for index in 0..<set.currentCards.count {
+            cardInfoList[index].index = index
+            cardInfoList[index].title = CardTheme.setCard(card: set.currentCards[index])
+            cardInfoList[index].isHidden = false
+            cardInfoList[index].isEnabled = true
         }
     }
     
-    
-    private func updateCardModel() {
-        for index in 0..<24 {
-                cardInfoList[index].index = index
-                cardInfoList[index].title = CardTheme.setCard(card: set.currentCards[index])
+    private func lastUpdateCardModel() {
+        for index in set.currentCards.count - 3..<set.currentCards.count {
+            cardInfoList.append(.init(index: index,
+                                      title: CardTheme.setCard(card: set.currentCards[index]),
+                                      isHidden: false,
+                                      isEnabled: true))
         }
     }
     
     private func addCard() {
-        let selectedCard = set.availableCards.remove(at: Int.random(in: 0..<set.availableCards.count))
-        set.currentCards.append(selectedCard)
+        if set.availableCards.count > 0 {
+            let selectedCard = set.availableCards.remove(at: Int.random(in: 0..<set.availableCards.count))
+            set.currentCards.append(selectedCard)
+        }
     }
     
     func addCards(numberOfCardsToSelect numberOfCards: Int) {
@@ -168,18 +178,29 @@ final class SetViewModel {
             set.selectedCards.append(card)
         }
         
+        // Here we check if cards are set
         if set.selectedCards.count == 3 && isSet() {
+            // If it is set we check three selected card
             set.selectedCards.forEach {
                 if let selectedCardInGameIndex = set.currentCards.firstIndex(of: $0) {
                     set.currentCards.remove(at: selectedCardInGameIndex)
-                    if set.availableCards.count > 0 {
-                        let selectedCard = set.availableCards.remove(at: Int.random(in: 0..<set.availableCards.count))
-                        set.currentCards.insert(selectedCard, at: selectedCardInGameIndex)
-                    }
+                    //We remove that card and check two condition. First: when every available card is used. Second: when it is not
+                        // When we have available card, we randomly use one card and will insert in the setted place
+                        if set.availableCards.count > 0 {
+                            let selectedCard = set.availableCards.remove(at: Int.random(in: 0..<set.availableCards.count))
+                            set.currentCards.insert(selectedCard, at: selectedCardInGameIndex)
+                        }
+                        // When we do not have any available cards we are just removing card's features from the cardInfoList
+                        if set.availableCards.count == 0 {
+                            cardInfoList.remove(at: selectedCardInGameIndex)
+                        }
+                    
                 }
             }
+            // After removing and inserting, then we update card info.
             updateCardModel()
             score += 3
+            // setChecker is used for animation
             setChecker = true
             set.selectedCards.removeAll()
         } else if set.selectedCards.count == 3 && !isSet() {

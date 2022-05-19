@@ -121,11 +121,32 @@ extension SetViewController { //Private functions
         viewModel.newGame()
         bindingScore()
         collectionView?.reloadData()
+        isDisabledAddThreeCardButton()
     }
     
     @objc private func addThreeCard() {
         viewModel.addThreeCard()
         collectionView?.reloadData()
+        isDisabledAddThreeCardButton()
+    }
+    
+    func isDisabledAddThreeCardButton() {
+        if viewModel.isDisabledAddThreeCardButton() {
+            UIView.animate(withDuration: 0.8,
+                           delay: 1.0,
+                           options: [],
+                           animations: {
+                self.addThreeCardTitle.isHidden = true
+            }, completion: nil)
+        } else {
+            UIView.animate(withDuration: 0.8,
+                           delay: 0.3,
+                           options: [],
+                           animations: {
+                self.addThreeCardTitle.backgroundColor = .gray
+                self.addThreeCardTitle.isHidden = false
+            }, completion: nil)
+        }
     }
     
     func onCardButton(index: Int) {
@@ -160,13 +181,12 @@ extension SetViewController { //Private functions
                                 forCellWithReuseIdentifier: String(describing: CollectionViewCell.self) )
         collectionView.backgroundColor = UIColor.black
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.isScrollEnabled = false
+        collectionView.isScrollEnabled = true
         collectionView.dataSource = self
     }
     
     private func configureCollectionViewLayout() {
         guard let collectionView = collectionView else { return }
-        
         layout.itemSize = CGSize(
             width: collectionView.frame.size.width / 4.5,
             height: collectionView.frame.size.height / 7)
@@ -206,7 +226,7 @@ extension SetViewController { //Private functions
         ])
     }
     
-    private func viewColor(for set: Bool,selectedTwice: Bool, selectedCard: Int) {
+    private func viewColor(for set: Bool, selectedTwice: Bool, selectedCard: Int) {
         if set == true && selectedTwice == true && selectedCard == 0 {
             UIView.animate(withDuration: 0.8,
                            delay: 0.3,
@@ -268,7 +288,7 @@ extension SetViewController { //Private functions
 extension SetViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 24
+        return viewModel.cardInfoList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
