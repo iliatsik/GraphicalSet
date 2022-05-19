@@ -17,6 +17,8 @@ final class SetViewController: UIViewController, CollectionViewCellDelegate {
     private var collectionView : UICollectionView?
     private let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
     private var rotateGesture: UIRotationGestureRecognizer = UIRotationGestureRecognizer()
+    private var swipeGesture = UISwipeGestureRecognizer()
+
     
     private lazy var viewModel = SetViewModel(coreDataStack: CoreDataStack(modelName: "Data"))
     
@@ -153,7 +155,12 @@ extension SetViewController { //Private functions
     
     private func configureGestureRecognizer() {
         rotateGesture = UIRotationGestureRecognizer(target: self, action: #selector(handleRotate))
+        swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(addThreeCard))
+        swipeGesture.direction = .down
+        
         view.addGestureRecognizer(rotateGesture)
+        view.addGestureRecognizer(swipeGesture)
+
     }
     
     @objc private func handleRotate(gesture: UIRotationGestureRecognizer) {
