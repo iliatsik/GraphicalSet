@@ -16,6 +16,7 @@ final class SetViewController: UIViewController, CollectionViewCellDelegate {
     private var constraints: [NSLayoutConstraint] = []
     private var collectionView : UICollectionView?
     private let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+    private var rotateGesture: UIRotationGestureRecognizer = UIRotationGestureRecognizer()
     
     private lazy var viewModel = SetViewModel(coreDataStack: CoreDataStack(modelName: "Data"))
     
@@ -93,6 +94,7 @@ final class SetViewController: UIViewController, CollectionViewCellDelegate {
         viewModel.onLoad()
         configureStackViews()
         configureCollectionView()
+        configureGestureRecognizer()
     }
     
     override func viewWillLayoutSubviews() {
@@ -130,7 +132,7 @@ extension SetViewController { //Private functions
         isDisabledAddThreeCardButton()
     }
     
-    func isDisabledAddThreeCardButton() {
+    private func isDisabledAddThreeCardButton() {
         if viewModel.isDisabledAddThreeCardButton() {
             UIView.animate(withDuration: 0.8,
                            delay: 1.0,
@@ -146,6 +148,18 @@ extension SetViewController { //Private functions
                 self.addThreeCardTitle.backgroundColor = .gray
                 self.addThreeCardTitle.isHidden = false
             }, completion: nil)
+        }
+    }
+    
+    private func configureGestureRecognizer() {
+        rotateGesture = UIRotationGestureRecognizer(target: self, action: #selector(handleRotate))
+        view.addGestureRecognizer(rotateGesture)
+    }
+    
+    @objc private func handleRotate(gesture: UIRotationGestureRecognizer) {
+        if gesture.state == UIGestureRecognizer.State.changed {
+            viewModel.shuffleCards()
+            collectionView?.reloadData()
         }
     }
     

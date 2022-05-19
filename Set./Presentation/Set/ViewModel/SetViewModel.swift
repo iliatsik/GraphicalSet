@@ -71,6 +71,11 @@ final class SetViewModel {
         }
     }
     
+    func shuffleCards() {
+        set.currentCards.shuffle()
+        updateCardModel()
+    }
+    
     private func generateAllCardCombinations() {
         for color in Card.Color.allCases {
             for symbol in Card.Symbol.allCases {
