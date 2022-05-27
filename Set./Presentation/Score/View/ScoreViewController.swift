@@ -9,21 +9,9 @@ import UIKit
 import CoreData
 
 final class ScoreViewController: UIViewController {
+
+    var viewModel: ScoreViewModel?
     
-//    init(viewModel: ScoreViewModel) {
-////        super.init(nibName: nil, bundle: nil)
-//        self.viewModel = ScoreViewModel(scoreRepository: ScoreRepository(delegate: self))
-//        super.init(nibName: nil, bundle: nil)
-//
-////        viewModel = ScoreViewModel(scoreRepository: ScoreRepository(delegate: self))
-//    }
-//        
-//    required init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-
-    private lazy var viewModel = ScoreViewModel(scoreRepository: ScoreRepository(delegate: self))
-
     private var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -33,7 +21,7 @@ final class ScoreViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.performFetch()
+        viewModel?.performFetch()
         view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
@@ -50,14 +38,15 @@ final class ScoreViewController: UIViewController {
 extension ScoreViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        viewModel.numberOfSections()
+        viewModel?.numberOfSections() ?? 0
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.numberOfRows(at: section)
+        viewModel?.numberOfRows(at: section) ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let viewModel = viewModel else { return UITableViewCell.init() }
         guard let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ScoreTableViewCell.self),
                                                        for: indexPath) as? ScoreTableViewCell else { return UITableViewCell.init() }
         
@@ -71,7 +60,7 @@ extension ScoreViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete", handler: { (action, view, success) in
-            self.viewModel.deleteScore(at: indexPath)
+            self.viewModel?.deleteScore(at: indexPath)
         })
         deleteAction.backgroundColor = .red
         return UISwipeActionsConfiguration(actions: [deleteAction])
@@ -99,8 +88,10 @@ extension ScoreViewController: NSFetchedResultsControllerDelegate {
         case .update:
             guard let indexPath = indexPath else { return }
             let cell = tableView.cellForRow(at: indexPath) as! ScoreTableViewCell
-            let score = viewModel.score(at: indexPath)
-            cell.configure(scoreTitle: "\(score.score)", dateTitle: "\(String(describing: score.date))", index: indexPath.row)
+            let score = viewModel?.score(at: indexPath)
+            cell.configure(scoreTitle: "\(String(describing: score?.score))",
+                           dateTitle: "\(String(describing: score?.date))",
+                           index: indexPath.row)
         case .move:
             tableView.deleteRows(at: [indexPath!], with: .automatic)
             tableView.insertRows(at: [newIndexPath!], with: .automatic)

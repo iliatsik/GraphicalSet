@@ -13,10 +13,6 @@ public class CoreDataFetchedResults<T: NSManagedObject> {
     var entityName: String!
     var sortDescriptors: [NSSortDescriptor]!
     var managedContext: NSManagedObjectContext!
-    var delegate: UIViewController?
-    var sectionNameKeyPath: String?
-    var cacheName: String?
-    var usesFatalError: Bool!
     
     public lazy var controller: NSFetchedResultsController<T> = {
         let fetchRequest = NSFetchRequest<T>(entityName: entityName)
@@ -25,23 +21,17 @@ public class CoreDataFetchedResults<T: NSManagedObject> {
         let fetchedResultsController = NSFetchedResultsController(
             fetchRequest: fetchRequest,
             managedObjectContext: managedContext,
-            sectionNameKeyPath: sectionNameKeyPath,
-            cacheName: cacheName)
-        
-        fetchedResultsController.delegate = delegate as? NSFetchedResultsControllerDelegate
-        
+            sectionNameKeyPath: nil,
+            cacheName: nil)
+                
         return fetchedResultsController
     }()
     
    
-    public init(ofType _: T.Type, entityName: String, sortDescriptors: [NSSortDescriptor], managedContext: NSManagedObjectContext, delegate: UIViewController?, sectionNameKeyPath: String? = nil, cacheName: String? = nil, usesFatalError: Bool = false) {
+    public init(ofType _: T.Type, entityName: String, sortDescriptors: [NSSortDescriptor], managedContext: NSManagedObjectContext) {
         self.entityName = entityName
         self.sortDescriptors = sortDescriptors
         self.managedContext = managedContext
-        self.delegate = delegate
-        self.sectionNameKeyPath = sectionNameKeyPath
-        self.cacheName = cacheName
-        self.usesFatalError = usesFatalError
     }
     
     public func saveContext(completion: @escaping (Result<Bool, Error>) -> () = {_ in}) {
@@ -68,13 +58,7 @@ public class CoreDataFetchedResults<T: NSManagedObject> {
     }
     
     private func handle(_ error: Error?, completion: @escaping () -> () = {}) {
-        if let error = error as NSError? {
-            let message = "CoreDataFetchedResults -> \(#function): Unresolved error: \(error), \(error.userInfo)"
-            if usesFatalError {
-                fatalError(message)
-            } else {
-                print(message)
-            }
+        if (error as NSError?) != nil {
             completion()
         }
     }

@@ -27,6 +27,7 @@
 		DC77312227E45FEC0048E617 /* Score+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC77312027E45FEC0048E617 /* Score+CoreDataProperties.swift */; };
 		DC927A2E27E4ABF100587D5B /* ScoreRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC927A2D27E4ABF100587D5B /* ScoreRepository.swift */; };
 		DCB26F5A282502E600C41104 /* ScoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB26F59282502E600C41104 /* ScoreViewModel.swift */; };
+		DCBB65F5284108580087C701 /* DependencyProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCBB65F4284108580087C701 /* DependencyProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		DC77312027E45FEC0048E617 /* Score+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Score+CoreDataProperties.swift"; path = "../../../../Score+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		DC927A2D27E4ABF100587D5B /* ScoreRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRepository.swift; sourceTree = "<group>"; };
 		DCB26F59282502E600C41104 /* ScoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreViewModel.swift; sourceTree = "<group>"; };
+		DCBB65F4284108580087C701 /* DependencyProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyProvider.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +198,7 @@
 		DC627E1427D63454001E4AC2 /* Infrastructure */ = {
 			isa = PBXGroup;
 			children = (
+				DCBB65F32840B0170087C701 /* DependencyProvider */,
 				DC77312327E4ABB90048E617 /* Repository */,
 				DC627E2727DB534E001E4AC2 /* Extensions */,
 				DC627E1327D63446001E4AC2 /* CoreData */,
@@ -243,6 +246,14 @@
 				DCB26F59282502E600C41104 /* ScoreViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		DCBB65F32840B0170087C701 /* DependencyProvider */ = {
+			isa = PBXGroup;
+			children = (
+				DCBB65F4284108580087C701 /* DependencyProvider.swift */,
+			);
+			path = DependencyProvider;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -325,6 +336,7 @@
 				DC927A2E27E4ABF100587D5B /* ScoreRepository.swift in Sources */,
 				DC77311B27E454570048E617 /* CoreDataStack.swift in Sources */,
 				DC627E0E27D61EFB001E4AC2 /* ScoreTableViewCell.swift in Sources */,
+				DCBB65F5284108580087C701 /* DependencyProvider.swift in Sources */,
 				DC627DA227BD7857001E4AC2 /* CardTheme.swift in Sources */,
 				DC627DA727BE1F45001E4AC2 /* SetViewModel.swift in Sources */,
 				DC627E0B27D607CE001E4AC2 /* ScoreViewController.swift in Sources */,

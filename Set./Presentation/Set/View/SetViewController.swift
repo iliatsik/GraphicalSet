@@ -19,8 +19,7 @@ final class SetViewController: UIViewController, CollectionViewCellDelegate {
     private var rotateGesture: UIRotationGestureRecognizer = UIRotationGestureRecognizer()
     private var swipeGesture = UISwipeGestureRecognizer()
 
-    
-    private lazy var viewModel = SetViewModel(coreDataStack: CoreDataStack(modelName: "Data"))
+    var viewModel: SetViewModel?
     
     private var scoreController: UIButton {
         let button = UIButton()
@@ -93,7 +92,7 @@ final class SetViewController: UIViewController, CollectionViewCellDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        viewModel.onLoad()
+        viewModel?.onLoad()
         configureStackViews()
         configureCollectionView()
         configureGestureRecognizer()
@@ -114,7 +113,7 @@ final class SetViewController: UIViewController, CollectionViewCellDelegate {
 extension SetViewController { //Private functions
     
     private func bindingScore() {
-        viewModel.$score
+        viewModel?.$score
             .sink { [weak self] score in
                 self?.scoreTitle.text = String(describing: score)
             }
@@ -122,19 +121,21 @@ extension SetViewController { //Private functions
     }
     
     @objc private func newGame() {
-        viewModel.newGame()
+        viewModel?.newGame()
         bindingScore()
         collectionView?.reloadData()
         isDisabledAddThreeCardButton()
     }
     
     @objc private func addThreeCard() {
-        viewModel.addThreeCard()
+        viewModel?.addThreeCard()
         collectionView?.reloadData()
         isDisabledAddThreeCardButton()
     }
     
     private func isDisabledAddThreeCardButton() {
+        guard let viewModel = viewModel else { return }
+
         if viewModel.isDisabledAddThreeCardButton() {
             UIView.animate(withDuration: 0.8,
                            delay: 1.0,
@@ -165,12 +166,14 @@ extension SetViewController { //Private functions
     
     @objc private func handleRotate(gesture: UIRotationGestureRecognizer) {
         if gesture.state == UIGestureRecognizer.State.changed {
-            viewModel.shuffleCards()
+            viewModel?.shuffleCards()
             collectionView?.reloadData()
         }
     }
     
     func onCardButton(index: Int) {
+        guard let viewModel = viewModel else { return }
+        
         viewModel.select(at: index)
         bindingScore()
         collectionView?.reloadData()
@@ -180,7 +183,7 @@ extension SetViewController { //Private functions
     }
     
     @objc private func pushForScore(_ sender: UIButton) {
-        let scoreViewController = ScoreViewController()
+        let scoreViewController = DependencyProvider.scoreViewController
         self.present(scoreViewController, animated: true, completion: nil)
     }
     
@@ -309,10 +312,11 @@ extension SetViewController { //Private functions
 extension SetViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.cardInfoList.count
+        return viewModel?.cardInfoList.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let viewModel = viewModel else { return UICollectionViewCell.init() }
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CollectionViewCell.self),
                                                             for: indexPath) as? CollectionViewCell
         else { return UICollectionViewCell.init() }

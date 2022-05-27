@@ -11,13 +11,9 @@ import CoreData
 public class CoreDataStack {
     
     private let modelName: String
-    private let usesCloudKit: Bool
-    private let usesFatalError: Bool
     
-    public init(modelName: String, usesCloudKit: Bool = false, usesFatalError: Bool = false) {
+    public init(modelName: String) {
         self.modelName = modelName
-        self.usesCloudKit = usesCloudKit
-        self.usesFatalError = usesFatalError
     }
     
     public lazy var managedContext: NSManagedObjectContext = {
@@ -26,30 +22,12 @@ public class CoreDataStack {
     
     private lazy var storeContainer: NSPersistentContainer = {
         
-        if usesCloudKit {
-            
-            let container = NSPersistentCloudKitContainer(name: self.modelName)
-            container.loadPersistentStores { (storeDescription, error) in
-                self.handle(error)
-            }
-            container.viewContext.automaticallyMergesChangesFromParent = true
-            
-            do {
-                try container.viewContext.setQueryGenerationFrom(.current)
-            } catch let error as NSError {
-                handle(error)
-            }
-            return container
-            
-        } else {
-            
-            let container = NSPersistentContainer(name: self.modelName)
-            container.loadPersistentStores { (storeDescription, error) in
-                self.handle(error)
-            }
-            return container
-            
+        let container = NSPersistentContainer(name: self.modelName)
+        container.loadPersistentStores { (storeDescription, error) in
+            self.handle(error)
         }
+        return container
+        
     }()
     
     public func saveContext(completion: @escaping (Result<Bool, Error>) -> () = {_ in}) {
@@ -118,13 +96,7 @@ public class CoreDataStack {
     }
     
     private func handle(_ error: Error?, completion: @escaping () -> () = {}) {
-        if let error = error as NSError? {
-            let message = "CoreDataStack -> \(#function): Unresolved error: \(error), \(error.userInfo)"
-            if usesFatalError {
-                fatalError(message)
-            } else {
-                print(message)
-            }
+        if (error as NSError?) != nil {
             completion()
         }
     }

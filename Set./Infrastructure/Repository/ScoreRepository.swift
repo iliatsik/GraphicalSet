@@ -12,16 +12,11 @@ import Combine
 
 class ScoreRepository {
         
-    init(delegate: NSFetchedResultsControllerDelegate) {
-        self.delegate = delegate
-    }
-    
     init(coreDataStack: CoreDataStack) {
         self.coreDataStack = coreDataStack
     }
-    
-    var coreDataStack: CoreDataStack?
-    var delegate: NSFetchedResultsControllerDelegate?
+
+    let coreDataStack: CoreDataStack
     
     var subscriber = Set<AnyCancellable>()
     @Published var score: [Score] = []
@@ -32,12 +27,10 @@ class ScoreRepository {
 
         let fetchedResultsController = NSFetchedResultsController(
             fetchRequest: fetchRequest,
-            managedObjectContext: coreDataStack!.managedContext,
+            managedObjectContext: coreDataStack.managedContext,
             sectionNameKeyPath: nil,
             cacheName: nil)
         
-        fetchedResultsController.delegate = delegate
-
         return fetchedResultsController
     }()
     
@@ -48,10 +41,7 @@ class ScoreRepository {
     lazy var coreDataFetchedResults = CoreDataFetchedResults(ofType: Score.self,
                                                              entityName: "Score",
                                                              sortDescriptors: sortDescriptors,
-                                                             managedContext: coreDataStack!.managedContext,
-                                                             delegate: ScoreViewController(),
-                                                             sectionNameKeyPath: nil,
-                                                             cacheName: nil)
+                                                             managedContext: coreDataStack.managedContext)
   
 }
 

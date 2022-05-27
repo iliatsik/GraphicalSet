@@ -31,14 +31,7 @@ final class SetViewModel {
         
     private var coreDataStack: CoreDataStack
     
-    func onLoad() { newGame() }
-    
-    func newGame() {
-        let currentScore = Score(context: self.coreDataStack.managedContext)
-        currentScore.score = Int16(score)
-        currentScore.date = Date().shortDateFormatter()
-        self.coreDataStack.saveContext()
-        
+    func onLoad() {
         score = 0
         set.availableCards.removeAll()
         set.currentCards.removeAll()
@@ -48,6 +41,14 @@ final class SetViewModel {
         generateAllCardCombinations()
         addCards(numberOfCardsToSelect: 12)
         updateCardModel()
+    }
+    
+    func newGame() {
+        let currentScore = Score(context: self.coreDataStack.managedContext)
+        currentScore.score = Int16(score)
+        currentScore.date = Date().shortDateFormatter()
+        self.coreDataStack.saveContext()
+        onLoad()
     }
     
     func addThreeCard() {

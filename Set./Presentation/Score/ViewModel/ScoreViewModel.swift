@@ -9,15 +9,12 @@ import Foundation
 
 final class ScoreViewModel {
     
-    let coreDataStack: CoreDataStack
-    private var scoreRepository: ScoreRepository
+    var scoreRepository: ScoreRepository
     
     init(scoreRepository: ScoreRepository) {
-        coreDataStack = CoreDataStack(modelName: "Data")
         self.scoreRepository = scoreRepository
-        self.scoreRepository = ScoreRepository(coreDataStack: coreDataStack)
     }
-    
+
     func numberOfSections() -> Int {
         scoreRepository.coreDataFetchedResults.controller.sections?.count ?? 0
     }
