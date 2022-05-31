@@ -12,8 +12,6 @@ import CoreData
 struct CardInfo {
     var index: Int?
     var title: NSAttributedString?
-    var isHidden: Bool?
-    var isEnabled: Bool?
 }
 
 final class SetViewModel {
@@ -94,17 +92,13 @@ final class SetViewModel {
         for index in 0..<set.currentCards.count {
             cardInfoList[index].index = index
             cardInfoList[index].title = CardTheme.setCard(card: set.currentCards[index])
-            cardInfoList[index].isHidden = false
-            cardInfoList[index].isEnabled = true
         }
     }
     
     private func lastUpdateCardModel() {
         for index in set.currentCards.count - 3..<set.currentCards.count {
             cardInfoList.append(.init(index: index,
-                                      title: CardTheme.setCard(card: set.currentCards[index]),
-                                      isHidden: false,
-                                      isEnabled: true))
+                                      title: CardTheme.setCard(card: set.currentCards[index])))
         }
     }
     

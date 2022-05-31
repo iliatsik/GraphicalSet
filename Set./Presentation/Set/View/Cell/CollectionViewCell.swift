@@ -44,12 +44,8 @@ final class CollectionViewCell: UICollectionViewCell {
     func configure(delegate: CollectionViewCellDelegate, cardInfo: CardInfo, isSet: Bool, isSelected: Bool) {        
         self.delegate = delegate
         guard let index = cardInfo.index else { return }
-        guard let isHidden = cardInfo.isHidden else { return }
-        guard let isEnabled = cardInfo.isEnabled else { return }
 
         button.tag = index
-        button.isHidden = isHidden
-        button.isEnabled = isEnabled
         button.setAttributedTitle(cardInfo.title, for: .normal)
         button.backgroundColor = .gray
         button.addTarget(self, action: #selector(onCardButton(sender:)), for: .touchUpInside)
